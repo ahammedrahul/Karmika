@@ -1,11 +1,15 @@
 package com.example.karmika.feature.auth.login
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.example.karmika.data.local.LocalUserStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+    private val localUserStorage: LocalUserStorage
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
 
@@ -74,13 +78,80 @@ class LoginViewModel : ViewModel() {
         if (hasError) return
 
 
-        // Backend will be connected here later.
-        //
-        // Example later:
-        //
-        // loginUseCase(
-        //     email = currentState.email,
-        //     password = currentState.password
-        // )
+        // -----------------------------------------------------
+        // LOCAL LOGIN
+        // -----------------------------------------------------
+
+        val savedUser = localUserStorage.getUser()
+
+
+        if (savedUser == null) {
+
+            _uiState.value = _uiState.value.copy(
+                emailError = "No registered account found"
+            )
+
+            return
+        }
+
+
+        if (
+            savedUser.email.trim() !=
+            currentState.email.trim()
+        ) {
+
+            _uiState.value = _uiState.value.copy(
+                emailError = "Account not found"
+            )
+
+            return
+        }
+
+
+        if (
+            savedUser.password !=
+            currentState.password
+        ) {
+
+            _uiState.value = _uiState.value.copy(
+                passwordError = "Incorrect password"
+            )
+
+            return
+        }
+
+
+        // Login successful
+
+        _uiState.value = _uiState.value.copy(
+            loginSuccessful = true
+        )
+    }
+
+
+    // ---------------------------------------------------------
+    // VIEWMODEL FACTORY
+    // ---------------------------------------------------------
+
+    class Factory(
+        private val localUserStorage: LocalUserStorage
+    ) : ViewModelProvider.Factory {
+
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(
+            modelClass: Class<T>
+        ): T {
+
+            if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
+
+                return LoginViewModel(
+                    localUserStorage
+                ) as T
+            }
+
+            throw IllegalArgumentException(
+                "Unknown ViewModel class"
+            )
+        }
     }
 }

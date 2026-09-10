@@ -1,31 +1,32 @@
 package com.example.karmika.feature.auth.login
+
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,595 +38,258 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.karmika.R
 import com.example.karmika.core.ui.components.KarmikaButton
+import com.example.karmika.core.ui.designsystem.KarmikaColors
+import com.example.karmika.core.ui.designsystem.KarmikaDimensions
+import com.example.karmika.core.ui.designsystem.KarmikaTypography
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
     onRegisterClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
-    onLoginSuccess: () -> Unit = {}
+    onLoginSuccess: () -> Unit = {},
+    onBackToHomeClick: () -> Unit = {}
 ) {
-
-    val state by viewModel.uiState
-        .collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(state.loginSuccessful) {
-
         if (state.loginSuccessful) {
-
             onLoginSuccess()
         }
     }
 
     LoginContent(
         state = state,
-
-        onEmailChanged =
-            viewModel::onEmailChanged,
-
-        onPasswordChanged =
-            viewModel::onPasswordChanged,
-
-        onLoginClick =
-            viewModel::login,
-
-        onRegisterClick =
-            onRegisterClick,
-
-        onForgotPasswordClick =
-            onForgotPasswordClick
+        onEmailChanged = viewModel::onEmailChanged,
+        onPasswordChanged = viewModel::onPasswordChanged,
+        onLoginClick = viewModel::login,
+        onRegisterClick = onRegisterClick,
+        onForgotPasswordClick = onForgotPasswordClick,
+        onBackToHomeClick = onBackToHomeClick
     )
 }
-
 
 @Composable
 private fun LoginContent(
     state: LoginUiState,
-
     onEmailChanged: (String) -> Unit,
-
     onPasswordChanged: (String) -> Unit,
-
     onLoginClick: () -> Unit,
-
     onRegisterClick: () -> Unit,
-
-    onForgotPasswordClick: () -> Unit
+    onForgotPasswordClick: () -> Unit,
+    onBackToHomeClick: () -> Unit
 ) {
-
-    var passwordVisible by remember {
-        mutableStateOf(false)
-    }
-
+    var passwordVisible by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                MaterialTheme.colorScheme.background
-            )
+            .background(KarmikaColors.LightSurface)
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(
-                    rememberScrollState()
-                )
-                .statusBarsPadding()
-                .navigationBarsPadding()
+                .verticalScroll(rememberScrollState())
                 .padding(
-                    horizontal = 20.dp,
-                    vertical = 24.dp
-                ),
-
-            horizontalAlignment =
-                Alignment.CenterHorizontally
-        ) {
-
-
-            // =====================================================
-            // TITLE
-            // =====================================================
-
-            Text(
-                text = "Welcome to Karmika",
-
-                modifier =
-                    Modifier.fillMaxWidth(),
-
-                textAlign =
-                    TextAlign.Center,
-
-                fontSize = 24.sp,
-
-                fontWeight =
-                    FontWeight.Bold,
-
-                color =
-                    MaterialTheme.colorScheme.onBackground
-            )
-
-
-            Spacer(
-                modifier = Modifier.height(14.dp)
-            )
-
-
-            Text(
-                text =
-                    "Sign in to continue or create a new account",
-
-                modifier =
-                    Modifier.fillMaxWidth(),
-
-                textAlign =
-                    TextAlign.Center,
-
-                fontSize = 14.sp,
-
-                color =
-                    MaterialTheme.colorScheme
-                        .onSurfaceVariant
-            )
-
-
-            Spacer(
-                modifier = Modifier.height(26.dp)
-            )
-
-
-            // =====================================================
-            // LOGIN / SIGN UP
-            // =====================================================
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-
-                horizontalArrangement =
-                    Arrangement.spacedBy(4.dp),
-
-                verticalAlignment =
-                    Alignment.CenterVertically
-            ) {
-
-                // LOGIN SELECTED
-
-                KarmikaButton(
-                    text = "Login",
-
-                    onClick = {},
-
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-
+                    horizontal = KarmikaDimensions.ScreenHorizontalPadding,
+                    vertical = KarmikaDimensions.ScreenVerticalPadding
                 )
+        ) {
+            // Space above Top Bar
+            Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceMedium))
 
-
-                // SIGN UP
-
-                OutlinedButton(
-                    onClick =
-                        onRegisterClick,
-
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight(),
-
-                    shape =
-                        RoundedCornerShape(10.dp),
-
-                    contentPadding =
-                        PaddingValues(0.dp)
+            // =================================================
+            // TOP BAR
+            // =================================================
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // LOGO + NAME
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo),
+                        contentDescription = "Karmika Logo",
+                        modifier = Modifier.size(32.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(KarmikaDimensions.SpaceSmall))
+
+                    Text(
+                        text = "Karmika",
+                        color = KarmikaColors.LightTextPrimary,
+                        style = KarmikaTypography.Heading2
+                    )
+                }
+
+                // SIGN UP BUTTON (Flat container with no material ripple or shadow)
+                Row(
+                    modifier = Modifier
+                        .background(
+                            color = KarmikaColors.LightSurfaceVariant,
+                            shape = RoundedCornerShape(KarmikaDimensions.RadiusExtraLarge)
+                        )
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null, // Suppresses hover and press overlay effects
+                            onClick = onRegisterClick
+                        )
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = "Sign Up",
+                        tint = KarmikaColors.Primary
+                    )
+
+                    Spacer(modifier = Modifier.width(KarmikaDimensions.SpaceSmall))
 
                     Text(
                         text = "Sign Up",
-
-                        fontSize = 16.sp,
-
-                        fontWeight =
-                            FontWeight.Medium
+                        color = KarmikaColors.Primary,
+                        style = KarmikaTypography.BodyMedium
                     )
                 }
             }
 
+            // =================================================
+            // SPACE BEFORE TITLE
+            // =================================================
+            Spacer(modifier = Modifier.height(48.dp))
 
-            Spacer(
-                modifier = Modifier.height(26.dp)
+            // =================================================
+            // TITLE
+            // =================================================
+            Text(
+                text = "Sign In",
+                color = KarmikaColors.LightTextPrimary,
+                style = KarmikaTypography.Heading1
             )
 
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // =====================================================
-            // EMAIL
-            // =====================================================
-
+            // =================================================
+            // EMAIL / USERNAME
+            // =================================================
             OutlinedTextField(
                 value = state.email,
-
-                onValueChange =
-                    onEmailChanged,
-
-                modifier =
-                    Modifier.fillMaxWidth(),
-
+                onValueChange = onEmailChanged,
+                modifier = Modifier.fillMaxWidth(),
                 placeholder = {
                     Text(
-                        text =
-                            "Enter your email address"
+                        text = "Email or Username",
+                        color = KarmikaColors.LightTextSecondary
                     )
                 },
-
-                leadingIcon = {
-                    Icon(
-                        imageVector =
-                            Icons.Default.Email,
-
-                        contentDescription =
-                            "Email"
-                    )
-                },
-
                 singleLine = true,
-
-                shape =
-                    RoundedCornerShape(12.dp),
-
-                isError =
-                    state.emailError != null
-            )
-
-
-            if (state.emailError != null) {
-
-                Text(
-                    text =
-                        state.emailError!!,
-
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = 4.dp
-                        ),
-
-                    fontSize = 12.sp,
-
-                    color =
-                        MaterialTheme.colorScheme.error
-                )
-            }
-
-
-            Spacer(
-                modifier = Modifier.height(12.dp)
-            )
-
-
-            // =====================================================
-            // PASSWORD
-            // =====================================================
-
-            OutlinedTextField(
-                value =
-                    state.password,
-
-                onValueChange =
-                    onPasswordChanged,
-
-                modifier =
-                    Modifier.fillMaxWidth(),
-
-                placeholder = {
-                    Text(
-                        text =
-                            "Enter your password"
-                    )
-                },
-
-                leadingIcon = {
-                    Icon(
-                        imageVector =
-                            Icons.Default.Lock,
-
-                        contentDescription =
-                            "Password"
-                    )
-                },
-
-                trailingIcon = {
-
-                    IconButton(
-                        onClick = {
-                            passwordVisible =
-                                !passwordVisible
-                        }
-                    ) {
-
-                        Icon(
-                            imageVector =
-                                if (passwordVisible)
-                                    Icons.Default.VisibilityOff
-                                else
-                                    Icons.Default.Visibility,
-
-                            contentDescription =
-                                if (passwordVisible)
-                                    "Hide password"
-                                else
-                                    "Show password"
+                isError = state.emailError != null,
+                supportingText = {
+                    state.emailError?.let {
+                        Text(
+                            text = it,
+                            color = KarmikaColors.Error
                         )
                     }
                 },
-
-                visualTransformation =
-                    if (passwordVisible)
-                        androidx.compose.ui.text.input
-                            .VisualTransformation.None
-                    else
-                        androidx.compose.ui.text.input
-                            .PasswordVisualTransformation(),
-
-                singleLine = true,
-
-                shape =
-                    RoundedCornerShape(12.dp),
-
-                isError =
-                    state.passwordError != null
+                shape = RoundedCornerShape(KarmikaDimensions.RadiusExtraLarge)
             )
 
-
-            if (state.passwordError != null) {
-
-                Text(
-                    text =
-                        state.passwordError!!,
-
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = 4.dp
-                        ),
-
-                    fontSize = 12.sp,
-
-                    color =
-                        MaterialTheme.colorScheme.error
-                )
-            }
-
-
-            // =====================================================
-            // FORGOT PASSWORD
-            // =====================================================
-
-            TextButton(
-                onClick =
-                    onForgotPasswordClick,
-
-                modifier =
-                    Modifier.align(
-                        Alignment.End
-                    ),
-
-                contentPadding =
-                    PaddingValues(
-                        horizontal = 0.dp,
-                        vertical = 2.dp
-                    )
-            ) {
-
-                Text(
-                    text =
-                        "Forgot Password?",
-
-                    fontSize = 14.sp,
-
-                    fontWeight =
-                        FontWeight.Medium,
-
-                    color =
-                        MaterialTheme.colorScheme.primary
-                )
-            }
-
-
-            Spacer(
-                modifier = Modifier.height(12.dp)
-            )
-
-
-            // =====================================================
-            // LOGIN BUTTON
-            // =====================================================
-
-            KarmikaButton(
-                text = "Login  →",
-
-                onClick =
-                    onLoginClick,
-
-                modifier =
-                    Modifier.fillMaxWidth(),
-
-                isLoading =
-                    state.isLoading
-            )
-
-
-            Spacer(
-                modifier = Modifier.height(22.dp)
-            )
-
-
-            // =====================================================
-            // OR
-            // =====================================================
-
-            Row(
-                modifier =
-                    Modifier.fillMaxWidth(),
-
-                verticalAlignment =
-                    Alignment.CenterVertically
-            ) {
-
-                HorizontalDivider(
-                    modifier =
-                        Modifier.weight(1f)
-                )
-
-                Text(
-                    text = "  OR  ",
-
-                    fontSize = 12.sp,
-
-                    color =
-                        MaterialTheme.colorScheme
-                            .onSurfaceVariant
-                )
-
-                HorizontalDivider(
-                    modifier =
-                        Modifier.weight(1f)
-                )
-            }
-
-
-            Spacer(
-                modifier = Modifier.height(16.dp)
-            )
-
-
-            // =====================================================
-            // GOOGLE
-            // =====================================================
-
-            OutlinedButton(
-                onClick = {},
-
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-
-                shape =
-                    RoundedCornerShape(10.dp),
-
-                contentPadding =
-                    PaddingValues(0.dp)
-            ) {
-
-                Text(
-                    text =
-                        "Continue with Google",
-
-                    fontSize = 15.sp,
-
-                    fontWeight =
-                        FontWeight.Medium
-                )
-            }
-
-
-            Spacer(
-                modifier = Modifier.height(10.dp)
-            )
-
-
-            // =====================================================
-            // APPLE
-            // =====================================================
-
-            OutlinedButton(
-                onClick = {},
-
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-
-                shape =
-                    RoundedCornerShape(10.dp),
-
-                contentPadding =
-                    PaddingValues(0.dp)
-            ) {
-
-                Text(
-                    text =
-                        "Continue with Apple",
-
-                    fontSize = 15.sp,
-
-                    fontWeight =
-                        FontWeight.Medium
-                )
-            }
-
-
-            Spacer(
-                modifier = Modifier.height(20.dp)
-            )
-
-
-            // =====================================================
-            // REGISTER
-            // =====================================================
-
-            Row(
-                modifier =
-                    Modifier.fillMaxWidth(),
-
-                horizontalArrangement =
-                    Arrangement.Center,
-
-                verticalAlignment =
-                    Alignment.CenterVertically
-            ) {
-
-                Text(
-                    text =
-                        "Don't have an account? ",
-
-                    fontSize = 13.sp,
-
-                    color =
-                        MaterialTheme.colorScheme
-                            .onSurfaceVariant
-                )
-
-                TextButton(
-                    onClick =
-                        onRegisterClick,
-
-                    contentPadding =
-                        PaddingValues(
-                            horizontal = 2.dp,
-                            vertical = 0.dp
-                        )
-                ) {
-
+            Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceMedium))
+
+            // =================================================
+            // PASSWORD
+            // =================================================
+            OutlinedTextField(
+                value = state.password,
+                onValueChange = onPasswordChanged,
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = {
                     Text(
-                        text = "Sign Up",
-
-                        fontSize = 13.sp,
-
-                        fontWeight =
-                            FontWeight.SemiBold,
-
-                        color =
-                            MaterialTheme.colorScheme.primary
+                        text = "Password",
+                        color = KarmikaColors.LightTextSecondary
                     )
-                }
+                },
+                singleLine = true,
+                isError = state.passwordError != null,
+                supportingText = {
+                    state.passwordError?.let {
+                        Text(
+                            text = it,
+                            color = KarmikaColors.Error
+                        )
+                    }
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = { passwordVisible = !passwordVisible }
+                    ) {
+                        Icon(
+                            imageVector = if (passwordVisible) {
+                                Icons.Outlined.VisibilityOff
+                            } else {
+                                Icons.Outlined.Visibility
+                            },
+                            contentDescription = if (passwordVisible) {
+                                "Hide password"
+                            } else {
+                                "Show password"
+                            },
+                            tint = KarmikaColors.LightTextSecondary
+                        )
+                    }
+                },
+                visualTransformation = if (passwordVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                shape = RoundedCornerShape(KarmikaDimensions.RadiusExtraLarge)
+            )
+
+            // =================================================
+            // FORGOT PASSWORD
+            // =================================================
+            TextButton(
+                onClick = onForgotPasswordClick,
+                modifier = Modifier.align(Alignment.Start),
+                contentPadding = PaddingValues(
+                    horizontal = 8.dp,
+                    vertical = 2.dp
+                )
+            ) {
+                Text(
+                    text = "Forgot password?",
+                    color = KarmikaColors.Primary,
+                    style = KarmikaTypography.BodyMedium
+                )
             }
+
+            Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceSmall))
+
+            // =================================================
+            // SIGN IN BUTTON
+            // =================================================
+            KarmikaButton(
+                text = "Sign In",
+                onClick = onLoginClick,
+                modifier = Modifier.fillMaxWidth(),
+                isLoading = state.isLoading
+            )
+
+            Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceLarge))
         }
     }
 }
