@@ -1,5 +1,6 @@
 package com.example.karmika.feature.customer.profile
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,12 +25,12 @@ import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,22 +38,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-// Color Palette
-private val PrimaryGreen = Color(0xFF00966D)
-private val LightGreenCard = Color(0xFFE6F4EA)
-private val LightGreenTint = Color(0xFFC8E6C9)
-private val DarkText = Color(0xFF182236)
-private val SecondaryText = Color(0xFF64748B)
-private val CardBorderColor = Color(0xFFD3ECE1)
-private val BackgroundColor = Color(0xFFF8FAFC)
-private val LogoutRed = Color(0xFFE53935)
-private val LogoutRedBg = Color(0xFFFDE8E8)
+import com.example.karmika.core.ui.designsystem.KarmikaColors
 
 @Composable
 fun CustomerProfileScreen(
@@ -60,7 +50,7 @@ fun CustomerProfileScreen(
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = BackgroundColor
+        color = KarmikaColors.LightBackground
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -77,7 +67,7 @@ fun CustomerProfileScreen(
                     text = "Profile",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
-                    color = DarkText
+                    color = KarmikaColors.LightTextPrimary
                 )
             }
 
@@ -86,8 +76,8 @@ fun CustomerProfileScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = LightGreenCard),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, CardBorderColor)
+                    colors = CardDefaults.cardColors(containerColor = KarmikaColors.PrimaryLight),
+                    border = BorderStroke(1.dp, KarmikaColors.Primary.copy(alpha = 0.2f))
                 ) {
                     Row(
                         modifier = Modifier
@@ -103,14 +93,14 @@ fun CustomerProfileScreen(
                                 modifier = Modifier
                                     .size(68.dp)
                                     .clip(CircleShape)
-                                    .background(LightGreenTint)
-                                    .border(2.dp, PrimaryGreen, CircleShape),
+                                    .background(KarmikaColors.PrimaryLight)
+                                    .border(2.dp, KarmikaColors.Primary, CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Outlined.Person,
                                     contentDescription = "Profile Picture",
-                                    tint = PrimaryGreen,
+                                    tint = KarmikaColors.Primary,
                                     modifier = Modifier.size(38.dp)
                                 )
                             }
@@ -120,15 +110,15 @@ fun CustomerProfileScreen(
                                 modifier = Modifier
                                     .size(24.dp)
                                     .clip(CircleShape)
-                                    .background(PrimaryGreen)
-                                    .border(2.dp, Color.White, CircleShape)
+                                    .background(KarmikaColors.Primary)
+                                    .border(2.dp, KarmikaColors.OnPrimary, CircleShape)
                                     .clickable { },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Outlined.Edit,
                                     contentDescription = "Edit Profile Picture",
-                                    tint = Color.White,
+                                    tint = KarmikaColors.OnPrimary,
                                     modifier = Modifier.size(12.dp)
                                 )
                             }
@@ -144,7 +134,7 @@ fun CustomerProfileScreen(
                                 text = "Rahul Sharma",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = DarkText
+                                color = KarmikaColors.LightTextPrimary
                             )
 
                             Spacer(modifier = Modifier.height(2.dp))
@@ -152,7 +142,7 @@ fun CustomerProfileScreen(
                             Text(
                                 text = "rahul.sharma@email.com",
                                 fontSize = 13.sp,
-                                color = SecondaryText
+                                color = KarmikaColors.LightTextSecondary
                             )
 
                             Spacer(modifier = Modifier.height(6.dp))
@@ -161,7 +151,7 @@ fun CustomerProfileScreen(
                                 text = "+91 98765 43210",
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = PrimaryGreen
+                                color = KarmikaColors.Primary
                             )
                         }
                     }
@@ -175,7 +165,7 @@ fun CustomerProfileScreen(
                         text = "Account",
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold,
-                        color = DarkText
+                        color = KarmikaColors.LightTextPrimary
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -183,8 +173,8 @@ fun CustomerProfileScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0))
+                        colors = CardDefaults.cardColors(containerColor = KarmikaColors.LightSurface),
+                        border = BorderStroke(1.dp, KarmikaColors.Border)
                     ) {
                         Column(
                             modifier = Modifier.padding(horizontal = 14.dp)
@@ -221,7 +211,7 @@ fun CustomerProfileScreen(
                         text = "Preferences & Support",
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold,
-                        color = DarkText
+                        color = KarmikaColors.LightTextPrimary
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -229,8 +219,8 @@ fun CustomerProfileScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0))
+                        colors = CardDefaults.cardColors(containerColor = KarmikaColors.LightSurface),
+                        border = BorderStroke(1.dp, KarmikaColors.Border)
                     ) {
                         Column(
                             modifier = Modifier.padding(horizontal = 14.dp)
@@ -259,7 +249,7 @@ fun CustomerProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(16.dp))
-                        .background(LogoutRedBg)
+                        .background(KarmikaColors.ErrorLight)
                         .clickable { onLogout() }
                         .padding(horizontal = 18.dp, vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -268,7 +258,7 @@ fun CustomerProfileScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.Logout,
                         contentDescription = "Logout",
-                        tint = LogoutRed,
+                        tint = KarmikaColors.Error,
                         modifier = Modifier.size(20.dp)
                     )
 
@@ -278,7 +268,7 @@ fun CustomerProfileScreen(
                         text = "Log Out",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = LogoutRed
+                        color = KarmikaColors.Error
                     )
                 }
             }
@@ -306,13 +296,13 @@ private fun ProfileMenuItem(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(LightGreenCard),
+                    .background(KarmikaColors.PrimaryLight),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = PrimaryGreen,
+                    tint = KarmikaColors.Primary,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -326,7 +316,7 @@ private fun ProfileMenuItem(
                     text = title,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = DarkText
+                    color = KarmikaColors.LightTextPrimary
                 )
 
                 Spacer(modifier = Modifier.height(2.dp))
@@ -334,7 +324,7 @@ private fun ProfileMenuItem(
                 Text(
                     text = subtitle,
                     fontSize = 12.sp,
-                    color = SecondaryText
+                    color = KarmikaColors.LightTextSecondary
                 )
             }
 
@@ -342,21 +332,21 @@ private fun ProfileMenuItem(
                 modifier = Modifier
                     .size(28.dp)
                     .clip(CircleShape)
-                    .background(BackgroundColor),
+                    .background(KarmikaColors.LightSurfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "Open",
-                    tint = SecondaryText,
+                    tint = KarmikaColors.LightTextSecondary,
                     modifier = Modifier.size(14.dp)
                 )
             }
         }
 
         if (showDivider) {
-            androidx.compose.material3.HorizontalDivider(
-                color = Color(0xFFF1F5F9),
+            HorizontalDivider(
+                color = KarmikaColors.Border.copy(alpha = 0.5f),
                 thickness = 1.dp
             )
         }

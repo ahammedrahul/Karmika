@@ -1,6 +1,10 @@
 package com.example.karmika.feature.customer.navigation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,43 +22,63 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun CustomerTopBar(
-    onNotificationClick: () -> Unit
+    onNotificationClick: () -> Unit,
+    showSearchBar: Boolean = false,
+    searchBar: @Composable () -> Unit = {}
 ) {
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = 20.dp,
-                vertical = 12.dp
-            ),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        modifier = Modifier.fillMaxWidth()
     ) {
 
         // =================================================
-        // KARMika BRAND
+        // MAIN TOP BAR
         // =================================================
 
-        Text(
-            text = "Karmika",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-
-        // =================================================
-        // NOTIFICATION
-        // =================================================
-
-        IconButton(
-            onClick = onNotificationClick
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 20.dp,
+                    vertical = 12.dp
+                ),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Icon(
-                imageVector = Icons.Outlined.NotificationsNone,
-                contentDescription = "Notifications"
+            // =================================================
+            // KARMika BRAND
+            // =================================================
+
+            Text(
+                text = "Karmika",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
             )
+
+            // =================================================
+            // NOTIFICATION
+            // =================================================
+
+            IconButton(
+                onClick = onNotificationClick
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.NotificationsNone,
+                    contentDescription = "Notifications"
+                )
+            }
+        }
+
+        // =================================================
+        // COLLAPSED SEARCH BAR
+        // =================================================
+
+        AnimatedVisibility(
+            visible = showSearchBar,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            searchBar()
         }
     }
 }

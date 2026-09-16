@@ -1,297 +1,223 @@
 package com.example.karmika.feature.customer.booking
-
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.outlined.CalendarToday
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-
-// Color Palette
-private val PrimaryGreen = Color(0xFF00966D)
-private val LightGreenCard = Color(0xFFE6F4EA)
-private val DarkText = Color(0xFF182236)
-private val SecondaryText = Color(0xFF64748B)
-private val CardBorderColor = Color(0xFFD3ECE1)
-private val BackgroundColor = Color(0xFFF8FAFC)
-
-// Status Specific Colors
-private val StatusPendingBg = Color(0xFFFFF7ED)
-private val StatusPendingText = Color(0xFFC2410C)
-private val StatusCancelledBg = Color(0xFFFEF2F2)
-private val StatusCancelledText = Color(0xFFDC2626)
+import com.example.karmika.domain.customer.model.Booking
 
 @Composable
 fun CustomerBookingScreen() {
-    var selectedTab by remember { mutableStateOf("Upcoming") }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = BackgroundColor
-    ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                horizontal = 20.dp,
-                vertical = 16.dp
+    var selectedTabIndex by remember {
+        mutableIntStateOf(0)
+    }
+
+    var selectedBooking by remember {
+        mutableStateOf<Booking?>(null)
+    }
+
+    /*
+     * Static booking data for UI testing.
+     * Every booking has a unique bookingId.
+     */
+    val bookings = remember {
+        listOf(
+            // Upcoming booking
+            Booking(
+                bookingId = "BK1001",
+                companyName = "Karmika Home Services",
+                serviceName = "AC Repair",
+                bookingDate = "15 September 2026",
+                bookingTime = "08:30 AM",
+                arrivalDate = "20 September 2026",
+                arrivalTime = "10:00 AM - 12:00 PM",
+                status = "Confirmed",
+                totalAmount = 850.00
             ),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
 
-            // Title Header
-            item {
-                Text(
-                    text = "My Bookings",
-                    fontSize = 26.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = DarkText
-                )
-            }
+            // Upcoming booking
+            Booking(
+                bookingId = "BK1002",
+                companyName = "Reliable Electricians",
+                serviceName = "Electrical Wiring",
+                bookingDate = "15 September 2026",
+                bookingTime = "09:30 AM",
+                arrivalDate = "22 September 2026",
+                arrivalTime = "02:00 PM - 04:00 PM",
+                status = "Pending",
+                totalAmount = 1200.00
+            ),
 
-            // Custom Filter Chips
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    listOf("Upcoming", "Completed", "Cancelled").forEach { tab ->
-                        FilterChip(
-                            selected = selectedTab == tab,
-                            onClick = { selectedTab = tab },
-                            label = {
-                                Text(
-                                    text = tab,
-                                    fontWeight = if (selectedTab == tab) FontWeight.Bold else FontWeight.Medium
-                                )
-                            },
-                            shape = RoundedCornerShape(12.dp),
-                            colors = FilterChipDefaults.filterChipColors(
-                                containerColor = Color.White,
-                                labelColor = SecondaryText,
-                                selectedContainerColor = PrimaryGreen,
-                                selectedLabelColor = Color.White
-                            ),
-                            border = FilterChipDefaults.filterChipBorder(
-                                enabled = true,
-                                selected = selectedTab == tab,
-                                borderColor = Color(0xFFE2E8F0),
-                                selectedBorderColor = PrimaryGreen
-                            )
-                        )
-                    }
-                }
-            }
+            // Completed booking
+            Booking(
+                bookingId = "BK1003",
+                companyName = "Clean Home Services",
+                serviceName = "House Cleaning",
+                bookingDate = "10 September 2026",
+                bookingTime = "10:00 AM",
+                arrivalDate = "12 September 2026",
+                arrivalTime = "11:00 AM - 01:00 PM",
+                status = "Completed",
+                totalAmount = 700.00
+            ),
 
-            // Bookings List
-            when (selectedTab) {
-                "Upcoming" -> {
-                    item {
-                        BookingCard(
-                            service = "Plumbing Service",
-                            worker = "Rajesh Kumar",
-                            date = "Tomorrow",
-                            time = "10:00 AM",
-                            status = "Confirmed"
-                        )
-                    }
-                    item {
-                        BookingCard(
-                            service = "AC Repair",
-                            worker = "Amit Sharma",
-                            date = "18 September",
-                            time = "2:00 PM",
-                            status = "Pending"
-                        )
-                    }
-                }
-
-                "Completed" -> {
-                    item {
-                        BookingCard(
-                            service = "Electrical Service",
-                            worker = "Suresh Verma",
-                            date = "10 September",
-                            time = "11:00 AM",
-                            status = "Completed"
-                        )
-                    }
-                }
-
-                else -> {
-                    item {
-                        BookingCard(
-                            service = "Cleaning Service",
-                            worker = "Vikram Singh",
-                            date = "5 September",
-                            time = "3:00 PM",
-                            status = "Cancelled"
-                        )
-                    }
-                }
-            }
-        }
+            // Cancelled booking
+            Booking(
+                bookingId = "BK1004",
+                companyName = "Karmika Plumbing",
+                serviceName = "Pipe Repair",
+                bookingDate = "8 September 2026",
+                bookingTime = "02:00 PM",
+                arrivalDate = "9 September 2026",
+                arrivalTime = "03:00 PM - 05:00 PM",
+                status = "Cancelled",
+                totalAmount = 500.00
+            )
+        )
     }
-}
 
-// Reusable Light-Green Theme Booking Card
-@Composable
-private fun BookingCard(
-    service: String,
-    worker: String,
-    date: String,
-    time: String,
-    status: String
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = LightGreenCard),
-        border = androidx.compose.foundation.BorderStroke(1.dp, CardBorderColor)
+    /*
+     * Show booking details when a booking is selected.
+     */
+    if (selectedBooking != null) {
+
+        BookingDetailsScreen(
+            booking = selectedBooking!!,
+            onBackClick = {
+                selectedBooking = null
+            }
+        )
+
+        return
+    }
+
+    val filteredBookings = when (selectedTabIndex) {
+
+        0 -> bookings.filter {
+            it.status.equals("Confirmed", ignoreCase = true) ||
+                    it.status.equals("Pending", ignoreCase = true)
+        }
+
+        1 -> bookings.filter {
+            it.status.equals("Completed", ignoreCase = true)
+        }
+
+        2 -> bookings.filter {
+            it.status.equals("Cancelled", ignoreCase = true)
+        }
+
+        else -> bookings
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+
+        /*
+         * Booking tabs
+         */
+        TabRow(
+            selectedTabIndex = selectedTabIndex,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            // Service Name & Status Badge Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+
+            Tab(
+                selected = selectedTabIndex == 0,
+                onClick = {
+                    selectedTabIndex = 0
+                },
+                text = {
+                    Text(text = "Upcoming")
+                }
+            )
+
+            Tab(
+                selected = selectedTabIndex == 1,
+                onClick = {
+                    selectedTabIndex = 1
+                },
+                text = {
+                    Text(text = "Completed")
+                }
+            )
+
+            Tab(
+                selected = selectedTabIndex == 2,
+                onClick = {
+                    selectedTabIndex = 2
+                },
+                text = {
+                    Text(text = "Cancelled")
+                }
+            )
+        }
+
+        /*
+         * Booking list
+         */
+        if (filteredBookings.isEmpty()) {
+
+            EmptyBookingMessage()
+
+        } else {
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text(
-                    text = service,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = DarkText
-                )
 
-                StatusBadge(status = status)
-            }
+                items(
+                    items = filteredBookings,
+                    key = {
+                        it.bookingId
+                    }
+                ) { booking ->
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Assigned Professional Details
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Person,
-                    contentDescription = "Worker",
-                    tint = PrimaryGreen,
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = worker,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = DarkText
-                )
-            }
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            // Date & Time Row
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.CalendarToday,
-                    contentDescription = "Schedule",
-                    tint = SecondaryText,
-                    modifier = Modifier.size(15.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = "$date • $time",
-                    fontSize = 13.sp,
-                    color = SecondaryText
-                )
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // View Details Link / Action
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { },
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "View Details",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = PrimaryGreen
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = null,
-                    tint = PrimaryGreen,
-                    modifier = Modifier.size(14.dp)
-                )
+                    BookingCard(
+                        booking = booking,
+                        onViewDetailsClick = {
+                            selectedBooking = it
+                        }
+                    )
+                }
             }
         }
     }
 }
 
-// Custom Dynamic Status Badge
 @Composable
-private fun StatusBadge(status: String) {
-    val (backgroundColor, textColor) = when (status) {
-        "Confirmed", "Completed" -> Pair(PrimaryGreen, Color.White)
-        "Pending" -> Pair(StatusPendingBg, StatusPendingText)
-        "Cancelled" -> Pair(StatusCancelledBg, StatusCancelledText)
-        else -> Pair(PrimaryGreen, Color.White)
-    }
+private fun EmptyBookingMessage() {
 
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(backgroundColor)
-            .padding(horizontal = 10.dp, vertical = 4.dp)
+            .fillMaxSize()
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
     ) {
+
         Text(
-            text = status,
-            color = textColor,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold
+            text = "No bookings available",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

@@ -45,10 +45,44 @@ sealed class KarmikaRoute(
 
     data object CustomerProfile :
         KarmikaRoute("customer/profile")
+
     data object CustomerNotifications :
         KarmikaRoute("customer/notifications")
+
     data object CustomerApp :
         KarmikaRoute("customer")
+
+
+    // =====================================================
+    // CUSTOMER SERVICE BOOKING FLOW
+    // =====================================================
+
+    data object CustomerServices :
+        KarmikaRoute("customer/services/{categoryId}") {
+
+        fun createRoute(categoryId: String): String {
+            return "customer/services/$categoryId"
+        }
+    }
+
+    data object CustomerServiceDetails :
+        KarmikaRoute("customer/service-details/{serviceId}") {
+
+        fun createRoute(serviceId: String): String {
+            return "customer/service-details/$serviceId"
+        }
+    }
+
+    data object CustomerBookingForm :
+        KarmikaRoute("customer/booking-form/{serviceId}") {
+
+        fun createRoute(serviceId: String): String {
+            return "customer/booking-form/$serviceId"
+        }
+    }
+
+    data object CustomerBookingConfirmation :
+        KarmikaRoute("customer/booking-confirmation")
 
 
     // =====================================================
