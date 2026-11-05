@@ -1,231 +1,372 @@
 package com.example.karmika.feature.auth.onboarding.customer
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.LocationCity
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material.icons.outlined.PinDrop
+import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.karmika.R
-
-private val PrimaryGreen = Color(0xFF00966D)
-private val DarkText = Color(0xFF182236)
-private val SecondaryText = Color(0xFF71829D)
-private val BorderColor = Color(0xFFD9E1EA)
-private val BackgroundColor = Color(0xFFFFFFFF)
+import com.example.karmika.core.ui.designsystem.KarmikaColors
+import com.example.karmika.core.ui.designsystem.KarmikaDimensions
+import com.example.karmika.core.ui.designsystem.KarmikaTypography
+import com.example.karmika.feature.auth.onboarding.common.components.OnboardingHeader
+import com.example.karmika.feature.auth.onboarding.common.components.OnboardingStepper
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun CustomerOnboardingScreen(
     viewModel: CustomerOnboardingViewModel,
     onBack: () -> Unit,
-    onContinue: () -> Unit
+    onContinue: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
 
-    Surface(
-        modifier = Modifier
+    Box(
+        modifier = modifier
             .fillMaxSize()
+            .background(KarmikaColors.LightBackground)
             .statusBarsPadding()
             .navigationBarsPadding(),
-        color = BackgroundColor
+        contentAlignment = Alignment.TopCenter
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .widthIn(max = 640.dp)
+                .padding(
+                    start = KarmikaDimensions.ScreenHorizontalPadding,
+                    end = KarmikaDimensions.ScreenHorizontalPadding,
+                    top = 8.dp,
+                    bottom = 12.dp
+                )
         ) {
-            // Header & Stepper Region
-            Column(
+            // Header (clean logo & title, no step count)
+            OnboardingHeader()
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OnboardingStepper(currentStep = 3)
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // Main Scrollable Area with imePadding so text fields never hide behind keyboard
+            BoxWithConstraints(
                 modifier = Modifier
+                    .weight(1f)
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 20.dp)
+                    .imePadding()
             ) {
-                // Title Header
+                val isWideScreen = maxWidth >= 520.dp
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo),
-                        contentDescription = "Karmika Logo",
-                        modifier = Modifier.size(32.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Text(
-                        text = "Karmika Account Setup",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = DarkText
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Progress Stepper Bar
-                OnboardingStepper(currentStep = 3)
-            }
-
-            HorizontalDivider(color = Color(0xFFE8ECF1), thickness = 1.dp)
-
-            // Scrollable Form Layout
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                    horizontal = 24.dp,
-                    vertical = 24.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(18.dp)
-            ) {
-                item {
+                    // Page Title & Subtitle
                     Text(
                         text = "Your Service Address",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = DarkText
+                        style = KarmikaTypography.Heading2,
+                        color = KarmikaColors.LightTextPrimary
                     )
-
-                    Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "Where should our verified skilled workers provide service?",
-                        fontSize = 15.sp,
-                        color = SecondaryText
+                        text = "Where should our verified skilled workers provide service? This ensures prompt and accurate dispatch.",
+                        style = KarmikaTypography.BodyMedium,
+                        color = KarmikaColors.LightTextSecondary
                     )
-                }
 
-                // Street Address Input Field
-                item {
-                    AddressInputField(
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    // Street Address Input Field
+                    ResponsiveAddressInputField(
                         label = "Street Address / House No.",
                         required = true,
                         value = uiState.streetAddress,
                         onValueChange = viewModel::onStreetAddressChanged,
                         placeholder = "e.g. House No. 42, Sector 17–A",
+                        leadingIcon = Icons.Outlined.Home,
                         errorMessage = uiState.streetAddressError,
-                        enabled = !uiState.isSubmitting
+                        enabled = !uiState.isSubmitting,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                        )
                     )
-                }
 
-                // Landmark Input Field
-                item {
-                    AddressInputField(
+                    // Apartment / Landmark Input Field
+                    ResponsiveAddressInputField(
                         label = "Apartment, Floor, Landmark (Optional)",
                         required = false,
                         value = uiState.apartment,
                         onValueChange = viewModel::onApartmentChanged,
                         placeholder = "e.g. Near City Garden, 2nd Floor",
-                        enabled = !uiState.isSubmitting
+                        leadingIcon = Icons.Outlined.LocationOn,
+                        enabled = !uiState.isSubmitting,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                        )
                     )
-                }
 
-                // City Input Field
-                item {
-                    AddressInputField(
-                        label = "City",
-                        required = true,
-                        value = uiState.city,
-                        onValueChange = viewModel::onCityChanged,
-                        placeholder = "e.g. Chandigarh",
-                        errorMessage = uiState.cityError,
-                        enabled = !uiState.isSubmitting
-                    )
-                }
+                    // City & State Fields (Adaptive 2-column on wider screens, stacked on small phones)
+                    if (isWideScreen) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            ResponsiveAddressInputField(
+                                label = "City",
+                                required = true,
+                                value = uiState.city,
+                                onValueChange = viewModel::onCityChanged,
+                                placeholder = "e.g. Chandigarh",
+                                leadingIcon = Icons.Outlined.LocationCity,
+                                errorMessage = uiState.cityError,
+                                enabled = !uiState.isSubmitting,
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Text,
+                                    imeAction = ImeAction.Next
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = { focusManager.moveFocus(FocusDirection.Right) }
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
 
-                // State Input Field
-                item {
-                    AddressInputField(
-                        label = "State / Region",
-                        required = true,
-                        value = uiState.state,
-                        onValueChange = viewModel::onStateChanged,
-                        placeholder = "e.g. Punjab",
-                        errorMessage = uiState.stateError,
-                        enabled = !uiState.isSubmitting
-                    )
-                }
+                            ResponsiveAddressInputField(
+                                label = "State / Region",
+                                required = true,
+                                value = uiState.state,
+                                onValueChange = viewModel::onStateChanged,
+                                placeholder = "e.g. Punjab",
+                                leadingIcon = Icons.Outlined.Map,
+                                errorMessage = uiState.stateError,
+                                enabled = !uiState.isSubmitting,
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Text,
+                                    imeAction = ImeAction.Next
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    } else {
+                        ResponsiveAddressInputField(
+                            label = "City",
+                            required = true,
+                            value = uiState.city,
+                            onValueChange = viewModel::onCityChanged,
+                            placeholder = "e.g. Chandigarh",
+                            leadingIcon = Icons.Outlined.LocationCity,
+                            errorMessage = uiState.cityError,
+                            enabled = !uiState.isSubmitting,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Next
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                            )
+                        )
 
-                // Postal Code Input Field
-                item {
-                    AddressInputField(
-                        label = "Postal / PIN Code",
-                        required = true,
-                        value = uiState.postalCode,
-                        onValueChange = viewModel::onPostalCodeChanged,
-                        placeholder = "e.g. 160017",
-                        errorMessage = uiState.postalCodeError,
-                        enabled = !uiState.isSubmitting
-                    )
-                }
+                        ResponsiveAddressInputField(
+                            label = "State / Region",
+                            required = true,
+                            value = uiState.state,
+                            onValueChange = viewModel::onStateChanged,
+                            placeholder = "e.g. Punjab",
+                            leadingIcon = Icons.Outlined.Map,
+                            errorMessage = uiState.stateError,
+                            enabled = !uiState.isSubmitting,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Next
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                            )
+                        )
+                    }
 
-                // Country Input Field
-                item {
-                    AddressInputField(
-                        label = "Country",
-                        required = true,
-                        value = uiState.country,
-                        onValueChange = viewModel::onCountryChanged,
-                        placeholder = "India",
-                        enabled = !uiState.isSubmitting
-                    )
-                }
+                    // Postal Code & Country Fields (Adaptive 2-column on wider screens, stacked on small phones)
+                    if (isWideScreen) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            ResponsiveAddressInputField(
+                                label = "Postal / PIN Code",
+                                required = true,
+                                value = uiState.postalCode,
+                                onValueChange = viewModel::onPostalCodeChanged,
+                                placeholder = "e.g. 160017",
+                                leadingIcon = Icons.Outlined.PinDrop,
+                                errorMessage = uiState.postalCodeError,
+                                enabled = !uiState.isSubmitting,
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Next
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = { focusManager.moveFocus(FocusDirection.Right) }
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
 
-                // Action Buttons inside LazyColumn
-                item {
-                    Spacer(modifier = Modifier.height(12.dp))
+                            ResponsiveAddressInputField(
+                                label = "Country",
+                                required = true,
+                                value = uiState.country,
+                                onValueChange = viewModel::onCountryChanged,
+                                placeholder = "India",
+                                leadingIcon = Icons.Outlined.Public,
+                                enabled = !uiState.isSubmitting,
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Text,
+                                    imeAction = ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        focusManager.clearFocus()
+                                        if (viewModel.validateAddress()) {
+                                            onContinue()
+                                        }
+                                    }
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    } else {
+                        ResponsiveAddressInputField(
+                            label = "Postal / PIN Code",
+                            required = true,
+                            value = uiState.postalCode,
+                            onValueChange = viewModel::onPostalCodeChanged,
+                            placeholder = "e.g. 160017",
+                            leadingIcon = Icons.Outlined.PinDrop,
+                            errorMessage = uiState.postalCodeError,
+                            enabled = !uiState.isSubmitting,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Next
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                            )
+                        )
 
+                        ResponsiveAddressInputField(
+                            label = "Country",
+                            required = true,
+                            value = uiState.country,
+                            onValueChange = viewModel::onCountryChanged,
+                            placeholder = "India",
+                            leadingIcon = Icons.Outlined.Public,
+                            enabled = !uiState.isSubmitting,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    focusManager.clearFocus()
+                                    if (viewModel.validateAddress()) {
+                                        onContinue()
+                                    }
+                                }
+                            )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    // Action Buttons inside the scroll view with extra clearance
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         OutlinedButton(
                             onClick = onBack,
                             enabled = !uiState.isSubmitting,
-                            shape = RoundedCornerShape(10.dp),
-                            border = BorderStroke(1.dp, BorderColor),
+                            shape = RoundedCornerShape(KarmikaDimensions.RadiusMedium),
+                            border = BorderStroke(1.dp, KarmikaColors.Border),
                             colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = Color(0xFF52627A)
+                                contentColor = KarmikaColors.LightTextPrimary
                             ),
-                            modifier = Modifier.height(48.dp)
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(KarmikaDimensions.ButtonHeight)
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -233,23 +374,30 @@ fun CustomerOnboardingScreen(
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = "Back", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                            Text(
+                                text = "Back",
+                                style = KarmikaTypography.Label.copy(fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                            )
                         }
 
                         Button(
                             onClick = {
+                                focusManager.clearFocus()
                                 if (viewModel.validateAddress()) {
                                     onContinue()
                                 }
                             },
                             enabled = !uiState.isSubmitting,
-                            shape = RoundedCornerShape(10.dp),
+                            shape = RoundedCornerShape(KarmikaDimensions.RadiusMedium),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = PrimaryGreen,
-                                contentColor = Color.White,
-                                disabledContainerColor = PrimaryGreen.copy(alpha = 0.7f)
+                                containerColor = KarmikaColors.Primary,
+                                contentColor = KarmikaColors.OnPrimary,
+                                disabledContainerColor = KarmikaColors.Primary.copy(alpha = 0.6f)
                             ),
-                            modifier = Modifier.height(48.dp)
+                            modifier = Modifier
+                                .weight(1.5f)
+                                .height(KarmikaDimensions.ButtonHeight),
+                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
                         ) {
                             if (uiState.isSubmitting) {
                                 CircularProgressIndicator(
@@ -260,15 +408,13 @@ fun CustomerOnboardingScreen(
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = "Saving...",
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
+                                    style = KarmikaTypography.Label.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold),
                                     color = Color.White
                                 )
                             } else {
                                 Text(
                                     text = "Complete Setup",
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold
+                                    style = KarmikaTypography.Label.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Icon(
@@ -279,183 +425,118 @@ fun CustomerOnboardingScreen(
                             }
                         }
                     }
+
+                    // Bottom padding at end of scroll
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
     }
 }
 
-// Reusable Input Field Component
+// Reusable Input Field with automatic BringIntoViewRequester on focus
 @Composable
-private fun AddressInputField(
+private fun ResponsiveAddressInputField(
     label: String,
     required: Boolean,
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
+    modifier: Modifier = Modifier,
+    leadingIcon: ImageVector? = null,
     errorMessage: String? = null,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row {
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val coroutineScope = rememberCoroutineScope()
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .bringIntoViewRequester(bringIntoViewRequester)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
                 text = label,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF334155)
+                style = KarmikaTypography.Label.copy(fontSize = 13.sp),
+                color = KarmikaColors.LightTextPrimary
             )
             if (required) {
                 Text(
                     text = " *",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFE53935)
+                    style = KarmikaTypography.Label.copy(fontSize = 13.sp, fontWeight = FontWeight.Bold),
+                    color = KarmikaColors.Error
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             enabled = enabled,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusEvent { focusState ->
+                    if (focusState.isFocused) {
+                        coroutineScope.launch {
+                            delay(180)
+                            bringIntoViewRequester.bringIntoView()
+                        }
+                    }
+                },
             singleLine = true,
             isError = errorMessage != null,
             placeholder = {
                 Text(
                     text = placeholder,
-                    fontSize = 14.sp,
-                    color = Color(0xFF94A3B8)
+                    style = KarmikaTypography.BodyMedium.copy(fontSize = 13.sp),
+                    color = KarmikaColors.LightTextSecondary.copy(alpha = 0.7f)
                 )
             },
-            shape = RoundedCornerShape(10.dp),
+            leadingIcon = leadingIcon?.let { icon ->
+                {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = if (errorMessage != null) KarmikaColors.Error else KarmikaColors.LightTextSecondary
+                    )
+                }
+            },
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+            shape = RoundedCornerShape(KarmikaDimensions.RadiusMedium),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = PrimaryGreen,
-                unfocusedBorderColor = BorderColor,
-                errorBorderColor = MaterialTheme.colorScheme.error,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
+                focusedBorderColor = KarmikaColors.Primary,
+                unfocusedBorderColor = KarmikaColors.Border,
+                errorBorderColor = KarmikaColors.Error,
+                focusedContainerColor = KarmikaColors.LightSurface,
+                unfocusedContainerColor = KarmikaColors.LightSurface,
+                disabledContainerColor = KarmikaColors.LightSurfaceVariant,
+                focusedTextColor = KarmikaColors.LightTextPrimary,
+                unfocusedTextColor = KarmikaColors.LightTextPrimary
             )
         )
 
-        if (errorMessage != null) {
-            Text(
-                text = errorMessage,
-                color = MaterialTheme.colorScheme.error,
-                fontSize = 12.sp,
-                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
-            )
-        }
-    }
-}
-
-// Custom Stepper Component
-@Composable
-private fun OnboardingStepper(currentStep: Int) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Bottom,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        StepNode(
-            label = "Select Role",
-            isCompleted = currentStep > 1,
-            isCurrent = currentStep == 1,
-            stepNumber = "1",
-            modifier = Modifier.weight(1f)
-        )
-
-        StepConnector(
-            isActive = currentStep > 1,
-            modifier = Modifier.padding(bottom = 14.dp)
-        )
-
-        StepNode(
-            label = "Profile",
-            isCompleted = currentStep > 2,
-            isCurrent = currentStep == 2,
-            stepNumber = "2",
-            modifier = Modifier.weight(1f)
-        )
-
-        StepConnector(
-            isActive = currentStep > 2,
-            modifier = Modifier.padding(bottom = 14.dp)
-        )
-
-        StepNode(
-            label = "Address",
-            isCompleted = currentStep > 3,
-            isCurrent = currentStep == 3,
-            stepNumber = "3",
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@Composable
-private fun StepNode(
-    label: String,
-    isCompleted: Boolean,
-    isCurrent: Boolean,
-    stepNumber: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = label,
-            fontSize = 13.sp,
-            fontWeight = if (isCurrent || isCompleted) FontWeight.Bold else FontWeight.Normal,
-            color = if (isCurrent || isCompleted) DarkText else SecondaryText
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Box(
-            modifier = Modifier
-                .size(30.dp)
-                .clip(CircleShape)
-                .background(
-                    when {
-                        isCompleted || isCurrent -> PrimaryGreen
-                        else -> Color(0xFFF1F5F9)
-                    }
-                ),
-            contentAlignment = Alignment.Center
+        AnimatedVisibility(
+            visible = errorMessage != null,
+            enter = fadeIn(),
+            exit = fadeOut()
         ) {
-            if (isCompleted) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(16.dp)
-                )
-            } else {
+            if (errorMessage != null) {
                 Text(
-                    text = stepNumber,
-                    color = if (isCurrent) Color.White else Color(0xFF64748B),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
+                    text = errorMessage,
+                    color = KarmikaColors.Error,
+                    style = KarmikaTypography.BodySmall,
+                    modifier = Modifier.padding(start = 4.dp, top = 2.dp)
                 )
             }
         }
     }
-}
-
-@Composable
-private fun StepConnector(
-    isActive: Boolean,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .width(36.dp)
-            .height(2.dp)
-            .background(if (isActive) PrimaryGreen else Color(0xFFCBD5E1))
-    )
 }

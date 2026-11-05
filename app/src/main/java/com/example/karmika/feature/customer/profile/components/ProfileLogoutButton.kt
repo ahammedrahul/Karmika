@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -46,7 +47,7 @@ fun ProfileLogoutButton(
             modifier = Modifier.padding(vertical = 4.dp)
         ) {
             Icon(
-                imageVector = Icons.Rounded.Logout,
+                imageVector = Icons.AutoMirrored.Rounded.Logout,
                 contentDescription = "Logout"
             )
 

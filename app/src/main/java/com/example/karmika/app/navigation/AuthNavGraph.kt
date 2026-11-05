@@ -1,12 +1,11 @@
 package com.example.karmika.app.navigation
 
 import androidx.compose.material3.Text
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
 import com.example.karmika.core.common.model.UserRole
-import com.example.karmika.data.local.LocalUserStorage
 
 import com.example.karmika.feature.auth.login.LoginScreen
 import com.example.karmika.feature.auth.login.LoginViewModel
@@ -16,19 +15,14 @@ import com.example.karmika.feature.auth.register.RegisterViewModel
 
 import com.example.karmika.feature.auth.onboarding.common.OnboardingRoleScreen
 
-
 fun NavGraphBuilder.authNavGraph(
-    localUserStorage: LocalUserStorage,
-
     onLoginClick: () -> Unit,
     onRegisterClick: () -> Unit,
 
     onLoginSuccess: () -> Unit,
     onRegistrationSuccess: () -> Unit,
 
-    onCustomerSelected: () -> Unit,
-    onWorkerSelected: () -> Unit,
-    onCompanySelected: () -> Unit
+    onRoleSelected: (UserRole) -> Unit
 ) {
 
     // =====================================================
@@ -38,7 +32,6 @@ fun NavGraphBuilder.authNavGraph(
     composable(
         route = KarmikaRoute.Splash.route
     ) {
-
         Text(
             text = "Splash Screen"
         )
@@ -53,21 +46,32 @@ fun NavGraphBuilder.authNavGraph(
         route = KarmikaRoute.Login.route
     ) {
 
+        val loginViewModel: LoginViewModel =
+            hiltViewModel()
+
         LoginScreen(
 
-            viewModel = viewModel(
-                factory = LoginViewModel.Factory(
-                    localUserStorage
-                )
-            ),
+            viewModel = loginViewModel,
+
+            // ---------------------------------------------
+            // REGISTER
+            // ---------------------------------------------
 
             onRegisterClick = {
                 onRegisterClick()
             },
 
+            // ---------------------------------------------
+            // FORGOT PASSWORD
+            // ---------------------------------------------
+
             onForgotPasswordClick = {
-                // TODO: Implement later
+                // TODO: Implement forgot password later.
             },
+
+            // ---------------------------------------------
+            // LOGIN SUCCESS
+            // ---------------------------------------------
 
             onLoginSuccess = {
                 onLoginSuccess()
@@ -84,17 +88,24 @@ fun NavGraphBuilder.authNavGraph(
         route = KarmikaRoute.Register.route
     ) {
 
+        val registerViewModel: RegisterViewModel =
+            hiltViewModel()
+
         RegisterScreen(
 
-            viewModel = viewModel(
-                factory = RegisterViewModel.Factory(
-                    localUserStorage
-                )
-            ),
+            viewModel = registerViewModel,
+
+            // ---------------------------------------------
+            // GO TO LOGIN
+            // ---------------------------------------------
 
             onLoginClick = {
                 onLoginClick()
             },
+
+            // ---------------------------------------------
+            // REGISTRATION SUCCESS
+            // ---------------------------------------------
 
             onRegistrationSuccess = {
                 onRegistrationSuccess()
@@ -112,27 +123,8 @@ fun NavGraphBuilder.authNavGraph(
     ) {
 
         OnboardingRoleScreen(
-
             onContinue = { selectedRole ->
-
-                when (selectedRole) {
-
-                    UserRole.HOUSEHOLD -> {
-                        onCustomerSelected()
-                    }
-
-                    UserRole.WORKER -> {
-                        onWorkerSelected()
-                    }
-
-                    UserRole.COMPANY -> {
-                        onCompanySelected()
-                    }
-
-                    UserRole.ORGANIZATION -> {
-                        onCompanySelected()
-                    }
-                }
+                onRoleSelected(selectedRole)
             }
         )
     }

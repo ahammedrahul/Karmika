@@ -13,15 +13,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowForward
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Business
 import androidx.compose.material.icons.outlined.Engineering
 import androidx.compose.material.icons.outlined.Person
@@ -49,6 +52,8 @@ import com.example.karmika.core.common.model.UserRole
 import com.example.karmika.core.ui.designsystem.KarmikaColors
 import com.example.karmika.core.ui.designsystem.KarmikaDimensions
 import com.example.karmika.core.ui.designsystem.KarmikaTypography
+import com.example.karmika.feature.auth.onboarding.common.components.OnboardingHeader
+import com.example.karmika.feature.auth.onboarding.common.components.OnboardingStepper
 
 @Composable
 fun OnboardingRoleScreen(
@@ -58,226 +63,129 @@ fun OnboardingRoleScreen(
     var selectedRole by remember { mutableStateOf(UserRole.HOUSEHOLD) }
     val scrollState = rememberScrollState()
 
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
             .background(KarmikaColors.LightBackground)
-            .padding(
-                horizontal = KarmikaDimensions.ScreenHorizontalPadding,
-                vertical = KarmikaDimensions.ScreenVerticalPadding
-            )
+            .statusBarsPadding()
+            .navigationBarsPadding(),
+        contentAlignment = Alignment.TopCenter
     ) {
-        // Main Scrollable Area
         Column(
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState)
+                .fillMaxSize()
+                .widthIn(max = 640.dp)
+                .padding(
+                    start = KarmikaDimensions.ScreenHorizontalPadding,
+                    end = KarmikaDimensions.ScreenHorizontalPadding,
+                    top = 8.dp,
+                    bottom = 12.dp
+                )
         ) {
-            Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceLarge))
+            // Header (clean logo & title, no step count)
+            OnboardingHeader()
 
-            // -----------------------------------------
-            // HEADER & STEPPER
-            // -----------------------------------------
-            Text(
-                text = "Karmika Account Setup",
-                style = KarmikaTypography.Heading3,
-                color = KarmikaColors.LightTextPrimary
-            )
-
-            Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceLarge))
+            Spacer(modifier = Modifier.height(10.dp))
 
             OnboardingStepper(currentStep = 1)
 
-            Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceXXLarge))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            // -----------------------------------------
-            // PAGE TITLE & DESCRIPTION
-            // -----------------------------------------
-            Text(
-                text = "How will you use Karmika?",
-                style = KarmikaTypography.Heading2,
-                color = KarmikaColors.LightTextPrimary
-            )
-
-            Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceSmall))
-
-            Text(
-                text = "Choose the option that fits your goal best. Additional role capabilities can be unlocked later.",
-                style = KarmikaTypography.BodyLarge,
-                color = KarmikaColors.LightTextSecondary
-            )
-
-            Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceExtraLarge))
-
-            // -----------------------------------------
-            // ROLE OPTIONS
-            // -----------------------------------------
+            // Main Scrollable Area
             Column(
-                verticalArrangement = Arrangement.spacedBy(KarmikaDimensions.SpaceMedium)
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState)
             ) {
-                // Household Option
-                OnboardingRoleCard(
-                    title = "Register as a User",
-                    description = "Book verified local home repairs, housekeeping, plumbing, and daily assistance.",
-                    icon = Icons.Outlined.Person,
-                    badge = "INSTANT ACCESS",
-                    badgeBgColor = KarmikaColors.Primary.copy(alpha = 0.12f),
-                    badgeTextColor = KarmikaColors.Primary,
-                    selected = selectedRole == UserRole.HOUSEHOLD,
-                    onClick = { selectedRole = UserRole.HOUSEHOLD }
+                // Page Title & Description
+                Text(
+                    text = "How will you use Karmika?",
+                    style = KarmikaTypography.Heading2,
+                    color = KarmikaColors.LightTextPrimary
                 )
 
-                // Worker Option
-                OnboardingRoleCard(
-                    title = "Register as a Worker",
-                    description = "Provide your skilled services (plumbing, carpentry, electrical) with fair wages.",
-                    icon = Icons.Outlined.Engineering,
-                    badge = "COMING SOON",
-                    badgeBgColor = Color(0xFFFFF3E0),
-                    badgeTextColor = Color(0xFFE65100),
-                    selected = selectedRole == UserRole.WORKER,
-                    onClick = { selectedRole = UserRole.WORKER }
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "Choose the option that fits your goal best. Additional role capabilities can be unlocked later.",
+                    style = KarmikaTypography.BodyMedium,
+                    color = KarmikaColors.LightTextSecondary
                 )
 
-                // Company Option
-                OnboardingRoleCard(
-                    title = "Register as a Company",
-                    description = "Contract workforce solutions for facility management, commercial sites, and projects.",
-                    icon = Icons.Outlined.Business,
-                    badge = "ENTERPRISE",
-                    badgeBgColor = Color(0xFFE8EAF6),
-                    badgeTextColor = Color(0xFF283593),
-                    selected = selectedRole == UserRole.COMPANY,
-                    onClick = { selectedRole = UserRole.COMPANY }
-                )
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Role Options List
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    // Household / User Option
+                    OnboardingRoleCard(
+                        title = "Register as a User",
+                        description = "Book verified local home repairs, housekeeping, plumbing, and daily assistance.",
+                        icon = Icons.Outlined.Person,
+                        badge = "INSTANT ACCESS",
+                        badgeBgColor = KarmikaColors.PrimaryLight,
+                        badgeTextColor = KarmikaColors.Primary,
+                        selected = selectedRole == UserRole.HOUSEHOLD,
+                        onClick = { selectedRole = UserRole.HOUSEHOLD }
+                    )
+
+                    // Worker Option
+                    OnboardingRoleCard(
+                        title = "Register as a Worker",
+                        description = "Provide your skilled services (plumbing, carpentry, electrical) with fair wages.",
+                        icon = Icons.Outlined.Engineering,
+                        badge = "SERVICE PARTNER",
+                        badgeBgColor = Color(0xFFFFF3E0),
+                        badgeTextColor = Color(0xFFE65100),
+                        selected = selectedRole == UserRole.WORKER,
+                        onClick = { selectedRole = UserRole.WORKER }
+                    )
+
+                    // Company Option
+                    OnboardingRoleCard(
+                        title = "Register as a Company",
+                        description = "Contract workforce solutions for facility management, commercial sites, and projects.",
+                        icon = Icons.Outlined.Business,
+                        badge = "ENTERPRISE",
+                        badgeBgColor = Color(0xFFE8EAF6),
+                        badgeTextColor = Color(0xFF283593),
+                        selected = selectedRole == UserRole.COMPANY,
+                        onClick = { selectedRole = UserRole.COMPANY }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
             }
 
-            Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceLarge))
-        }
+            Spacer(modifier = Modifier.height(8.dp))
 
-        // -----------------------------------------
-        // FIXED ACTION BUTTON
-        // -----------------------------------------
-        Button(
-            onClick = { onContinue(selectedRole) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(KarmikaDimensions.ButtonHeight),
-            shape = RoundedCornerShape(KarmikaDimensions.RadiusMedium),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = KarmikaColors.Primary,
-                contentColor = KarmikaColors.OnPrimary
-            )
-        ) {
-            Text(
-                text = "Continue",
-                style = KarmikaTypography.Label.copy(fontSize = 16.sp)
-            )
-            Spacer(modifier = Modifier.width(KarmikaDimensions.SpaceSmall))
-            Icon(
-                imageVector = Icons.Outlined.ArrowForward,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-        }
-    }
-}
-
-// =====================================================
-// STEPPER COMPONENT
-// =====================================================
-
-@Composable
-private fun OnboardingStepper(currentStep: Int) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Bottom, // Aligns circles with the connecting line
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        // Step 1
-        StepItem(
-            number = "1",
-            label = "Select Role",
-            isActive = currentStep >= 1,
-            modifier = Modifier.weight(1f)
-        )
-
-        StepLine(
-            isActive = currentStep > 1,
-            modifier = Modifier.padding(bottom = 13.dp) // Aligns line to middle of 28.dp circles
-        )
-
-        // Step 2
-        StepItem(
-            number = "2",
-            label = "Profile",
-            isActive = currentStep >= 2,
-            modifier = Modifier.weight(1f)
-        )
-
-        StepLine(
-            isActive = currentStep > 2,
-            modifier = Modifier.padding(bottom = 13.dp)
-        )
-
-        // Step 3
-        StepItem(
-            number = "3",
-            label = "Address",
-            isActive = currentStep >= 3,
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@Composable
-private fun StepItem(
-    number: String,
-    label: String,
-    isActive: Boolean,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = label,
-            style = KarmikaTypography.Label,
-            color = if (isActive) KarmikaColors.LightTextPrimary else KarmikaColors.LightTextSecondary,
-            maxLines = 1
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        Box(
-            modifier = Modifier
-                .size(28.dp)
-                .clip(CircleShape)
-                .background(if (isActive) KarmikaColors.Primary else KarmikaColors.LightSurfaceVariant),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = number,
-                color = if (isActive) KarmikaColors.OnPrimary else KarmikaColors.LightTextSecondary,
-                style = KarmikaTypography.Label
-            )
+            // Fixed Action Button
+            Button(
+                onClick = { onContinue(selectedRole) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(KarmikaDimensions.ButtonHeight),
+                shape = RoundedCornerShape(KarmikaDimensions.RadiusMedium),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = KarmikaColors.Primary,
+                    contentColor = KarmikaColors.OnPrimary
+                ),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+            ) {
+                Text(
+                    text = "Continue",
+                    style = KarmikaTypography.Label.copy(fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                )
+                Spacer(modifier = Modifier.width(KarmikaDimensions.SpaceSmall))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         }
     }
-}
-
-@Composable
-private fun StepLine(
-    isActive: Boolean,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .width(32.dp)
-            .height(2.dp)
-            .background(if (isActive) KarmikaColors.Primary else KarmikaColors.Border)
-    )
 }
 
 // =====================================================
@@ -303,10 +211,6 @@ private fun OnboardingRoleCard(
         targetValue = if (selected) 2.dp else 1.dp,
         label = "BorderWidthAnimation"
     )
-    val containerColor by animateColorAsState(
-        targetValue = if (selected) KarmikaColors.PrimaryLight.copy(alpha = 0.3f) else KarmikaColors.LightSurface,
-        label = "ContainerColorAnimation"
-    )
 
     Surface(
         modifier = Modifier
@@ -318,12 +222,14 @@ private fun OnboardingRoleCard(
                 shape = RoundedCornerShape(KarmikaDimensions.RadiusLarge)
             )
             .clickable { onClick() },
-        color = containerColor
+        color = KarmikaColors.LightSurface, // Constant background - does not change on select
+        shape = RoundedCornerShape(KarmikaDimensions.RadiusLarge),
+        shadowElevation = if (selected) 2.dp else 0.dp
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(KarmikaDimensions.SpaceLarge)
+                .padding(14.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -333,7 +239,7 @@ private fun OnboardingRoleCard(
                 // Icon Header
                 Box(
                     modifier = Modifier
-                        .size(44.dp)
+                        .size(38.dp)
                         .clip(RoundedCornerShape(KarmikaDimensions.RadiusMedium))
                         .background(badgeBgColor),
                     contentAlignment = Alignment.Center
@@ -342,7 +248,7 @@ private fun OnboardingRoleCard(
                         imageVector = icon,
                         contentDescription = null,
                         tint = badgeTextColor,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 }
 
@@ -362,23 +268,23 @@ private fun OnboardingRoleCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceMedium))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Text(
                 text = title,
-                style = KarmikaTypography.Heading3,
+                style = KarmikaTypography.Heading3.copy(fontSize = 17.sp),
                 color = KarmikaColors.LightTextPrimary
             )
 
-            Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceSmall))
+            Spacer(modifier = Modifier.height(3.dp))
 
             Text(
                 text = description,
-                style = KarmikaTypography.BodyMedium,
+                style = KarmikaTypography.BodyMedium.copy(fontSize = 13.sp),
                 color = KarmikaColors.LightTextSecondary
             )
 
-            Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceMedium))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Selection Radio Row
             Row(
@@ -392,16 +298,17 @@ private fun OnboardingRoleCard(
                         selectedColor = KarmikaColors.Primary,
                         unselectedColor = KarmikaColors.LightTextSecondary
                     ),
-                    modifier = Modifier
-                        .size(20.dp)
-                        .padding(end = 4.dp)
+                    modifier = Modifier.size(20.dp)
                 )
 
                 Spacer(modifier = Modifier.width(KarmikaDimensions.SpaceSmall))
 
                 Text(
                     text = if (selected) "Selected" else "Select Option",
-                    style = KarmikaTypography.Label,
+                    style = KarmikaTypography.Label.copy(
+                        fontSize = 13.sp,
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
+                    ),
                     color = if (selected) KarmikaColors.Primary else KarmikaColors.LightTextSecondary
                 )
             }

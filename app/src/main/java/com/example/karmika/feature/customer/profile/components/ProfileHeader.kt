@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,8 +20,6 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Phone
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -60,8 +57,8 @@ fun ProfileHeader(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 20.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 16.dp, vertical = 18.dp),
+            verticalAlignment = Alignment.Top // Align top so button sits at the top right
         ) {
 
             // ---------------------------------------------------------
@@ -70,7 +67,7 @@ fun ProfileHeader(
             Box(
                 modifier = Modifier.size(80.dp)
             ) {
-                // Avatar placeholder (Replace with AsyncImage/Coil for network image)
+                // Avatar placeholder
                 Box(
                     modifier = Modifier
                         .size(76.dp)
@@ -116,7 +113,7 @@ fun ProfileHeader(
             // ---------------------------------------------------------
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(3.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     text = fullName,
@@ -175,30 +172,24 @@ fun ProfileHeader(
             Spacer(modifier = Modifier.width(8.dp))
 
             // ---------------------------------------------------------
-            // EDIT PROFILE BUTTON
+            // TOP-RIGHT ICON-ONLY EDIT BUTTON
             // ---------------------------------------------------------
-            FilledTonalButton(
-                onClick = onEditProfileClick,
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = buttonBgGreen,
-                    contentColor = primaryGreen
-                ),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+            Surface(
+                modifier = Modifier.size(36.dp),
+                shape = CircleShape,
+                color = buttonBgGreen
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.Edit,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = "Edit Profile",
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 13.sp
+                IconButton(
+                    onClick = onEditProfileClick,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Edit,
+                        contentDescription = "Edit Profile",
+                        modifier = Modifier.size(18.dp),
+                        tint = primaryGreen
                     )
-                )
+                }
             }
         }
     }

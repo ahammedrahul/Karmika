@@ -1,5 +1,5 @@
-package com.example.karmika.feature.auth.register
 
+package com.example.karmika.feature.auth.register
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,10 +18,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Login
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Login
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,6 +54,7 @@ fun RegisterScreen(
     // =====================================================
     // REGISTRATION SUCCESS
     // =====================================================
+
     LaunchedEffect(uiState.registrationSuccessful) {
         if (uiState.registrationSuccessful) {
             viewModel.clearRegistrationSuccess()
@@ -63,6 +65,7 @@ fun RegisterScreen(
     // =====================================================
     // SCREEN
     // =====================================================
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -76,11 +79,16 @@ fun RegisterScreen(
     ) {
 
         // Space above the Top Bar
-        Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceMedium))
+        Spacer(
+            modifier = Modifier.height(
+                KarmikaDimensions.SpaceMedium
+            )
+        )
 
         // =================================================
         // TOP BAR
         // =================================================
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -91,13 +99,18 @@ fun RegisterScreen(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 Image(
                     painter = painterResource(id = R.drawable.logo),
                     contentDescription = "Karmika Logo",
                     modifier = Modifier.size(32.dp)
                 )
 
-                Spacer(modifier = Modifier.width(KarmikaDimensions.SpaceSmall))
+                Spacer(
+                    modifier = Modifier.width(
+                        KarmikaDimensions.SpaceSmall
+                    )
+                )
 
                 Text(
                     text = "Karmika",
@@ -106,28 +119,40 @@ fun RegisterScreen(
                 )
             }
 
-            // SIGN IN BUTTON (Flat custom Clickable without default material shadow/hover effect)
+            // SIGN IN BUTTON
             Row(
                 modifier = Modifier
                     .background(
                         color = KarmikaColors.LightSurfaceVariant,
-                        shape = RoundedCornerShape(KarmikaDimensions.RadiusExtraLarge)
+                        shape = RoundedCornerShape(
+                            KarmikaDimensions.RadiusExtraLarge
+                        )
                     )
                     .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null, // Removes ripple / press effect
+                        interactionSource = remember {
+                            MutableInteractionSource()
+                        },
+                        indication = null,
                         onClick = onLoginClick
                     )
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 8.dp
+                    ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 Icon(
-                    imageVector = Icons.Outlined.Login,
+                    imageVector = Icons.AutoMirrored.Outlined.Login,
                     contentDescription = "Sign In",
                     tint = KarmikaColors.Primary
                 )
 
-                Spacer(modifier = Modifier.width(KarmikaDimensions.SpaceSmall))
+                Spacer(
+                    modifier = Modifier.width(
+                        KarmikaDimensions.SpaceSmall
+                    )
+                )
 
                 Text(
                     text = "Sign In",
@@ -140,7 +165,12 @@ fun RegisterScreen(
         // =================================================
         // TITLE
         // =================================================
-        Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceLarge))
+
+        Spacer(
+            modifier = Modifier.height(
+                KarmikaDimensions.SpaceLarge
+            )
+        )
 
         Text(
             text = "Sign Up",
@@ -149,11 +179,16 @@ fun RegisterScreen(
             style = KarmikaTypography.Heading1
         )
 
-        Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceExtraLarge))
+        Spacer(
+            modifier = Modifier.height(
+                KarmikaDimensions.SpaceExtraLarge
+            )
+        )
 
         // =================================================
         // FULL NAME
         // =================================================
+
         KarmikaTextField(
             value = uiState.fullName,
             onValueChange = viewModel::onFullNameChanged,
@@ -163,13 +198,20 @@ fun RegisterScreen(
             error = uiState.fullNameError
         )
 
-        RegisterErrorText(error = uiState.fullNameError)
+        RegisterErrorText(
+            error = uiState.fullNameError
+        )
 
-        Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceMedium))
+        Spacer(
+            modifier = Modifier.height(
+                KarmikaDimensions.SpaceMedium
+            )
+        )
 
         // =================================================
         // EMAIL
         // =================================================
+
         KarmikaTextField(
             value = uiState.email,
             onValueChange = viewModel::onEmailChanged,
@@ -179,17 +221,27 @@ fun RegisterScreen(
             error = uiState.emailError
         )
 
-        RegisterErrorText(error = uiState.emailError)
+        RegisterErrorText(
+            error = uiState.emailError
+        )
 
-        Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceMedium))
+        Spacer(
+            modifier = Modifier.height(
+                KarmikaDimensions.SpaceMedium
+            )
+        )
 
         // =================================================
         // PHONE
         // =================================================
+
         KarmikaTextField(
             value = uiState.phone,
             onValueChange = { value ->
-                if (value.length <= 10 && value.all { it.isDigit() }) {
+                if (
+                    value.length <= 10 &&
+                    value.all { it.isDigit() }
+                ) {
                     viewModel.onPhoneChanged(value)
                 }
             },
@@ -199,13 +251,20 @@ fun RegisterScreen(
             error = uiState.phoneError
         )
 
-        RegisterErrorText(error = uiState.phoneError)
+        RegisterErrorText(
+            error = uiState.phoneError
+        )
 
-        Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceMedium))
+        Spacer(
+            modifier = Modifier.height(
+                KarmikaDimensions.SpaceMedium
+            )
+        )
 
         // =================================================
         // PASSWORD
         // =================================================
+
         KarmikaPasswordField(
             value = uiState.password,
             onValueChange = viewModel::onPasswordChanged,
@@ -214,13 +273,20 @@ fun RegisterScreen(
             error = uiState.passwordError
         )
 
-        RegisterErrorText(error = uiState.passwordError)
+        RegisterErrorText(
+            error = uiState.passwordError
+        )
 
-        Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceMedium))
+        Spacer(
+            modifier = Modifier.height(
+                KarmikaDimensions.SpaceMedium
+            )
+        )
 
         // =================================================
         // CONFIRM PASSWORD
         // =================================================
+
         KarmikaPasswordField(
             value = uiState.confirmPassword,
             onValueChange = viewModel::onConfirmPasswordChanged,
@@ -229,24 +295,63 @@ fun RegisterScreen(
             error = uiState.confirmPasswordError
         )
 
-        RegisterErrorText(error = uiState.confirmPasswordError)
+        RegisterErrorText(
+            error = uiState.confirmPasswordError
+        )
+
+        // =================================================
+        // BACKEND ERROR
+        // =================================================
+
+        RegisterErrorText(
+            error = uiState.generalError
+        )
 
         // =================================================
         // SIGN UP BUTTON
         // =================================================
-        Spacer(modifier = Modifier.height(KarmikaDimensions.SpaceLarge))
+
+        Spacer(
+            modifier = Modifier.height(
+                KarmikaDimensions.SpaceLarge
+            )
+        )
 
         KarmikaButton(
-            text = "Sign Up",
-            onClick = { viewModel.register() },
-            modifier = Modifier.fillMaxWidth() // Enforces full width
+            text = if (uiState.isLoading) {
+                "Creating Account..."
+            } else {
+                "Sign Up"
+            },
+            onClick = {
+                if (!uiState.isLoading) {
+                    viewModel.register()
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
         )
+
+        // Loading indicator
+        if (uiState.isLoading) {
+            Spacer(
+                modifier = Modifier.height(
+                    KarmikaDimensions.SpaceMedium
+                )
+            )
+
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = KarmikaColors.Primary,
+                strokeWidth = 2.dp
+            )
+        }
     }
 }
 
 // =========================================================
 // ERROR TEXT
 // =========================================================
+
 @Composable
 private fun RegisterErrorText(
     error: String?

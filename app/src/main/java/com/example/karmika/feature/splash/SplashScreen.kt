@@ -1,5 +1,4 @@
 package com.example.karmika.feature.splash
-
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
@@ -32,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -40,13 +38,14 @@ import androidx.compose.ui.unit.sp
 import com.example.karmika.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SplashScreen(
     onSplashFinished: () -> Unit
 ) {
-    // Icons representing: Customer, Worker, Company, Services, Trust
+
     val loaderIcons = remember {
         listOf(
             Icons.Default.Person,       // Customer
@@ -62,14 +61,14 @@ fun SplashScreen(
     // Rotate through icons continuously
     LaunchedEffect(Unit) {
         while (isActive) {
-            delay(800) // Change icon every 800ms
+            delay(800.milliseconds) // Change icon every 800ms
             currentIconIndex = (currentIconIndex + 1) % loaderIcons.size
         }
     }
 
     // Navigation delay (adjust or replace with auth check logic)
     LaunchedEffect(Unit) {
-        delay(4000) // Total splash duration
+        delay(4000.milliseconds) // Total splash duration
         onSplashFinished()
     }
 

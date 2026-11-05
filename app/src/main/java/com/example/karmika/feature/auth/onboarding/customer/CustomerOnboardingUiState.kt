@@ -1,3 +1,5 @@
+package com.example.karmika.feature.auth.onboarding.customer
+
 data class CustomerOnboardingUiState(
     val streetAddress: String = "",
     val streetAddressError: String? = null,
@@ -9,5 +11,5 @@ data class CustomerOnboardingUiState(
     val postalCode: String = "",
     val postalCodeError: String? = null,
     val country: String = "India",
-    val isSubmitting: Boolean = false // Add this property
+    val isSubmitting: Boolean = false
 )

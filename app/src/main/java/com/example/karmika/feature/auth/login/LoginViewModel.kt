@@ -1,157 +1,170 @@
 package com.example.karmika.feature.auth.login
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.example.karmika.data.local.LocalUserStorage
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import androidx.lifecycle.viewModelScope
+import com.example.karmika.core.data.network.KarmikaApi
+import com.example.karmika.core.data.session.UserSession
+import com.example.karmika.data.auth.remote.request.LoginRequest
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
+import javax.inject.Inject
 import kotlinx.coroutines.flow.asStateFlow
 
-class LoginViewModel(
-    private val localUserStorage: LocalUserStorage
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val karmikaApi: KarmikaApi,
+    private val userSession: UserSession
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(LoginUiState())
+    private val _uiState =
+        kotlinx.coroutines.flow.MutableStateFlow(LoginUiState())
 
-    val uiState: StateFlow<LoginUiState> =
+    val uiState: kotlinx.coroutines.flow.StateFlow<LoginUiState> =
         _uiState.asStateFlow()
-
 
     fun onEmailChanged(value: String) {
         _uiState.value = _uiState.value.copy(
             email = value,
-            emailError = null
+            emailError = null,
+            errorMessage = null
         )
     }
-
 
     fun onPasswordChanged(value: String) {
         _uiState.value = _uiState.value.copy(
             password = value,
-            passwordError = null
+            passwordError = null,
+            errorMessage = null
         )
     }
 
-
     fun login() {
-
         val currentState = _uiState.value
-
-        var hasError = false
 
         var emailError: String? = null
         var passwordError: String? = null
 
-
         if (currentState.email.isBlank()) {
-
             emailError = "Email is required"
-
-            hasError = true
-
         } else if (
             !android.util.Patterns.EMAIL_ADDRESS
-                .matcher(currentState.email)
+                .matcher(currentState.email.trim())
                 .matches()
         ) {
-
             emailError = "Enter a valid email"
-
-            hasError = true
         }
-
 
         if (currentState.password.isBlank()) {
-
             passwordError = "Password is required"
-
-            hasError = true
         }
-
 
         _uiState.value = currentState.copy(
             emailError = emailError,
-            passwordError = passwordError
+            passwordError = passwordError,
+            errorMessage = null
         )
 
+        if (emailError != null || passwordError != null) return
 
-        if (hasError) return
-
-
-        // -----------------------------------------------------
-        // LOCAL LOGIN
-        // -----------------------------------------------------
-
-        val savedUser = localUserStorage.getUser()
-
-
-        if (savedUser == null) {
-
+        viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
-                emailError = "No registered account found"
+                isLoading = true,
+                loginSuccessful = false,
+                errorMessage = null
             )
 
-            return
-        }
+            try {
+                val response = karmikaApi.login(
+                    LoginRequest(
+                        identifier = currentState.email.trim(),
+                        password = currentState.password
+                    )
+                )
 
+                val loginData = response.data
 
-        if (
-            savedUser.email.trim() !=
-            currentState.email.trim()
-        ) {
+                if (!response.success || loginData == null) {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = response.message
+                            ?: "Login failed. Please try again."
+                    )
+                    return@launch
+                }
 
-            _uiState.value = _uiState.value.copy(
-                emailError = "Account not found"
-            )
+                if (loginData.isBlocked) {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        isBlocked = true,
+                        blockReason = loginData.blockReason,
+                        blockedUntil = loginData.blockedUntil,
+                        blockedAt = loginData.blockedAt,
+                        errorMessage = loginData.blockReason
+                            ?: "Your account is blocked."
+                    )
+                    return@launch
+                }
 
-            return
-        }
+                val user = loginData.user
 
+                if (loginData.token.isNullOrBlank()) {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = "Login response did not contain an authentication token."
+                    )
+                    return@launch
+                }
 
-        if (
-            savedUser.password !=
-            currentState.password
-        ) {
+                userSession.updateUser(
+                    fullName = user?.name,
+                    email = user?.email ?: currentState.email.trim(),
+                    role = user?.role,
+                    token = loginData.token
+                )
 
-            _uiState.value = _uiState.value.copy(
-                passwordError = "Incorrect password"
-            )
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    loginSuccessful = true,
+                    token = loginData.token,
+                    userId = user?.id,
+                    userName = user?.name,
+                    userEmail = user?.email,
+                    username = user?.username,
+                    role = user?.role,
+                    onboardingCompleted = user?.onboardingCompleted ?: false,
+                    isBlocked = false,
+                    blockReason = null,
+                    blockedUntil = null,
+                    blockedAt = null
+                )
 
-            return
-        }
+            } catch (e: HttpException) {
+                val message = when (e.code()) {
+                    401 -> "Invalid email or password."
+                    403 -> "Your account does not have permission to log in."
+                    else -> "Login failed. Please try again."
+                }
 
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = message
+                )
 
-        // Login successful
+            } catch (e: IOException) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = "Unable to connect. Check your internet connection."
+                )
 
-        _uiState.value = _uiState.value.copy(
-            loginSuccessful = true
-        )
-    }
-
-
-    // ---------------------------------------------------------
-    // VIEWMODEL FACTORY
-    // ---------------------------------------------------------
-
-    class Factory(
-        private val localUserStorage: LocalUserStorage
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(
-            modelClass: Class<T>
-        ): T {
-
-            if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
-
-                return LoginViewModel(
-                    localUserStorage
-                ) as T
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = e.message
+                        ?: "An unexpected error occurred."
+                )
             }
-
-            throw IllegalArgumentException(
-                "Unknown ViewModel class"
-            )
         }
     }
 }

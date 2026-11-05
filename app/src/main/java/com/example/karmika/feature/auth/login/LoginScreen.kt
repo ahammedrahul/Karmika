@@ -259,6 +259,18 @@ private fun LoginContent(
                 shape = RoundedCornerShape(KarmikaDimensions.RadiusExtraLarge)
             )
 
+
+
+            state.errorMessage?.let { message ->
+                Text(
+                    text = message,
+                    color = KarmikaColors.Error,
+                    style = KarmikaTypography.BodyMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = KarmikaDimensions.SpaceSmall)
+                )
+            }
             // =================================================
             // FORGOT PASSWORD
             // =================================================

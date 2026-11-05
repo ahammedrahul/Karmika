@@ -1,11 +1,20 @@
 package com.example.karmika.feature.auth.onboarding.common.profile
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.karmika.core.data.session.UserSession
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProfileStepViewModel : ViewModel() {
+@HiltViewModel
+class ProfileStepViewModel @Inject constructor(
+    private val userSession: UserSession
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
         ProfileStepUiState()
@@ -14,6 +23,20 @@ class ProfileStepViewModel : ViewModel() {
     val uiState: StateFlow<ProfileStepUiState> =
         _uiState.asStateFlow()
 
+    init {
+        // Collect user profile data saved during register / login
+        viewModelScope.launch {
+            userSession.currentUser.collect { user ->
+                if (user.fullName.isNotBlank() || user.email.isNotBlank()) {
+                    _uiState.value = _uiState.value.copy(
+                        fullName = user.fullName,
+                        email = user.email,
+                        phone = user.phone
+                    )
+                }
+            }
+        }
+    }
 
     // =====================================================
     // REGISTRATION DATA
@@ -24,7 +47,6 @@ class ProfileStepViewModel : ViewModel() {
         email: String,
         phone: String = ""
     ) {
-
         _uiState.value = _uiState.value.copy(
             fullName = fullName,
             email = email,
@@ -32,29 +54,33 @@ class ProfileStepViewModel : ViewModel() {
         )
     }
 
-
     // =====================================================
     // AVATAR
     // =====================================================
 
     fun onAvatarSelected(index: Int) {
-
         _uiState.value = _uiState.value.copy(
             selectedAvatar = index
         )
     }
 
-
     // =====================================================
-    // PROFILE IMAGE
+    // PROFILE IMAGE URL
     // =====================================================
 
-    fun onProfileImageUrlChanged(
-        value: String
-    ) {
-
+    fun onProfileImageUrlChanged(value: String) {
         _uiState.value = _uiState.value.copy(
             profileImageUrl = value
+        )
+    }
+
+    // =====================================================
+    // PROFILE PHOTO URI
+    // =====================================================
+
+    fun onPhotoSelected(uri: Uri?) {
+        _uiState.value = _uiState.value.copy(
+            selectedPhotoUri = uri
         )
     }
 }
